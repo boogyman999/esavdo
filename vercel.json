@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/lots.js": {
+      "maxDuration": 15
+    }
+  },
+  "rewrites": [
+    { "source": "/api/lots", "destination": "/api/lots" }
+  ]
+}
