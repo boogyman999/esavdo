@@ -187,6 +187,34 @@
     transition: background 0.18s;
   }
   .popup-btn:hover { background: #155fc4; }
+
+  /* CAT GRID */
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+
+  /* IFRAME */
+  .iframe-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .back-btn {
+    padding: 8px 16px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--white); color: var(--blue); font-size: 13px;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: all 0.18s;
+  }
+  .back-btn:hover { background: var(--blue-light); border-color: var(--blue); }
+  .iframe-title { font-size: 15px; font-weight: 700; color: var(--text); flex: 1; }
+  .open-link {
+    font-size: 12px; font-weight: 600; color: var(--blue);
+    text-decoration: none; padding: 6px 14px; border-radius: 8px;
+    background: var(--blue-light); transition: background 0.18s;
+  }
+  .open-link:hover { background: #c5d9f5; }
+  #lots-iframe {
+    width: 100%; height: 680px; border-radius: var(--radius);
+    border: 1.5px solid var(--border); box-shadow: var(--shadow);
+  }
+
 </style>
 </head>
 <body>
@@ -259,48 +287,55 @@
     <p class="page-subtitle">Выберите категорию для участия в торгах</p>
 
     <!-- LOTS VIEW -->
-    <div class="search-wrap" id="search-wrap">
-      <input class="search-input" type="text" placeholder="Поиск по категориям..." id="searchInput">
-      <span class="total-badge" id="totalBadge">9 категорий</span>
-    </div>
+    <div id="lots-view">
+      <div class="cat-grid" id="cat-grid">
+        <a href="#" class="card" data-cat="gov" data-url="https://e-auksion.uz/lots?category=1">
+          <div class="card-icon">&#x1F3E2;</div>
+          <div class="card-text"><div class="card-title">Государственные активы</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="rent" data-url="https://e-auksion.uz/lots?category=2">
+          <div class="card-icon">&#x1F511;</div>
+          <div class="card-text"><div class="card-title">Аренда госимущества</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="bank" data-url="https://e-auksion.uz/lots?category=5">
+          <div class="card-icon">&#x1F3E6;</div>
+          <div class="card-text"><div class="card-title">Имущество коммерческих банков</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="realty" data-url="https://e-auksion.uz/lots?category=10">
+          <div class="card-icon">&#x1F3E0;</div>
+          <div class="card-text"><div class="card-title">Недвижимость</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="auto" data-url="https://e-auksion.uz/lots?category=11">
+          <div class="card-icon">&#x1F697;</div>
+          <div class="card-text"><div class="card-title">Автотранспорт</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="land" data-url="https://e-auksion.uz/lots?category=3">
+          <div class="card-icon">&#x1F333;</div>
+          <div class="card-text"><div class="card-title">Земельные участки</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="ads" data-url="https://e-auksion.uz/lots?category=14">
+          <div class="card-icon">&#x1FAA7;</div>
+          <div class="card-text"><div class="card-title">Объекты наружной рекламы</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="radar" data-url="https://e-auksion.uz/lots?category=22">
+          <div class="card-icon">&#x1F4F9;</div>
+          <div class="card-text"><div class="card-title">Места для установки радаров и камер</div><div class="card-count">0 лотов</div></div>
+        </a>
+        <a href="#" class="card" data-cat="liquidation" data-url="https://e-auksion.uz/lots?category=31">
+          <div class="card-icon">&#x1F4C2;</div>
+          <div class="card-text"><div class="card-title">Добровольная ликвидация субъектов предпринимательства</div><div class="card-count">0 лотов</div></div>
+        </a>
+      </div>
 
-    <div class="grid" id="grid">
-      <a href="#" class="card" data-cat="gov">
-        <div class="card-icon">🏢</div>
-        <div class="card-text"><div class="card-title">Государственные активы</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="rent">
-        <div class="card-icon">🔑</div>
-        <div class="card-text"><div class="card-title">Аренда госимущества</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="bank">
-        <div class="card-icon">🏦</div>
-        <div class="card-text"><div class="card-title">Имущество коммерческих банков</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="realty">
-        <div class="card-icon">🏠</div>
-        <div class="card-text"><div class="card-title">Недвижимость</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="auto">
-        <div class="card-icon">🚗</div>
-        <div class="card-text"><div class="card-title">Автотранспорт</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="land">
-        <div class="card-icon">🌳</div>
-        <div class="card-text"><div class="card-title">Земельные участки</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="ads">
-        <div class="card-icon">🪧</div>
-        <div class="card-text"><div class="card-title">Объекты наружной рекламы</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="radar">
-        <div class="card-icon">📹</div>
-        <div class="card-text"><div class="card-title">Места для установки радаров и камер</div><div class="card-count">0 лотов</div></div>
-      </a>
-      <a href="#" class="card" data-cat="liquidation">
-        <div class="card-icon">📂</div>
-        <div class="card-text"><div class="card-title">Добровольная ликвидация субъектов предпринимательства</div><div class="card-count">0 лотов</div></div>
-      </a>
+      <!-- iframe лотов -->
+      <div id="iframe-wrap" style="display:none;">
+        <div class="iframe-header">
+          <button class="back-btn" onclick="goBack()">&#8592; Назад к категориям</button>
+          <span class="iframe-title" id="iframe-title"></span>
+          <a class="open-link" id="open-link" href="#" target="_blank">Открыть на e-auksion &#x2197;</a>
+        </div>
+        <iframe id="lots-iframe" src="" frameborder="0" allowfullscreen></iframe>
+      </div>
     </div>
 
     <!-- MAP VIEW -->
@@ -346,10 +381,10 @@ function switchView(view, e) {
   }
 }
 
-// ── Sidebar filter ──
+// ── Sidebar filter + card click -> iframe ──
 const sidebarItems = document.querySelectorAll('.sidebar-item');
-const cards = Array.from(document.querySelectorAll('.card'));
 const pageTitle = document.getElementById('page-title');
+
 const catNames = {
   all: 'Все категории', gov: 'Государственные активы', rent: 'Аренда госимущества',
   bank: 'Имущество коммерческих банков', realty: 'Недвижимость', auto: 'Автотранспорт',
@@ -357,6 +392,32 @@ const catNames = {
   radar: 'Места для установки радаров и камер',
   liquidation: 'Добровольная ликвидация субъектов предпринимательства'
 };
+
+// Click on category card -> show iframe
+document.querySelectorAll('.card[data-url]').forEach(card => {
+  card.addEventListener('click', e => {
+    e.preventDefault();
+    const url = card.dataset.url;
+    const cat = card.dataset.cat;
+    const title = catNames[cat] || '';
+
+    document.getElementById('cat-grid').style.display = 'none';
+    document.getElementById('iframe-wrap').style.display = 'block';
+    document.getElementById('lots-iframe').src = url;
+    document.getElementById('iframe-title').textContent = title;
+    document.getElementById('open-link').href = url;
+    pageTitle.textContent = title;
+  });
+});
+
+function goBack() {
+  document.getElementById('cat-grid').style.display = '';
+  document.getElementById('iframe-wrap').style.display = 'none';
+  document.getElementById('lots-iframe').src = '';
+  pageTitle.textContent = 'Все категории';
+}
+
+// Sidebar clicks
 sidebarItems.forEach(item => {
   item.addEventListener('click', e => {
     e.preventDefault();
@@ -364,26 +425,21 @@ sidebarItems.forEach(item => {
     item.classList.add('active');
     const cat = item.dataset.cat;
     pageTitle.textContent = catNames[cat] || 'Все категории';
-    filterCards(cat, document.getElementById('searchInput').value);
+
+    // If iframe is open, close it
+    goBack();
+
+    // Filter cards
+    const cards = document.querySelectorAll('.card[data-url]');
+    cards.forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
   });
 });
-document.getElementById('searchInput').addEventListener('input', e => {
-  const activeCat = document.querySelector('.sidebar-item.active')?.dataset.cat || 'all';
-  filterCards(activeCat, e.target.value);
-});
-function filterCards(cat, query) {
-  const q = query.trim().toLowerCase();
-  let visible = 0;
-  cards.forEach(card => {
-    const matchCat = cat === 'all' || card.dataset.cat === cat;
-    const matchQ = !q || card.querySelector('.card-title').textContent.toLowerCase().includes(q);
-    const show = matchCat && matchQ;
-    card.style.display = show ? '' : 'none';
-    if (show) visible++;
-  });
-  const word = visible === 1 ? 'категория' : visible < 5 ? 'категории' : 'категорий';
-  document.getElementById('totalBadge').textContent = `${visible} ${word}`;
-}
 
 // ── MAP ──
 let map, geojsonLayer, selectedRegion = null;
