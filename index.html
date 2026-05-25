@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Электронные торги — Лоты</title>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,16 +23,8 @@
     --shadow-hover: 0 6px 24px rgba(26,111,219,0.16);
   }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Golos Text', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  body {
-    font-family: 'Golos Text', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── HEADER ── */
   header {
     background: var(--white);
     border-bottom: 1px solid var(--border);
@@ -42,155 +35,89 @@
     height: 64px;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
     box-shadow: 0 1px 8px rgba(26,111,219,0.06);
   }
 
   .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--blue);
-    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 18px; font-weight: 700; color: var(--blue); text-decoration: none;
   }
   .logo svg { width: 32px; height: 32px; }
 
-  /* ── TOP NAV (Лоты и карта) ── */
   .top-nav { display: flex; gap: 4px; }
   .top-nav a {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-decoration: none;
-    padding: 6px 18px;
-    border-radius: 8px;
-    transition: all 0.18s;
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    font-size: 14px; font-weight: 600; color: var(--text-muted);
+    text-decoration: none; padding: 6px 18px; border-radius: 8px;
+    transition: all 0.18s; display: flex; align-items: center; gap: 7px;
   }
   .top-nav a:hover { color: var(--blue); background: var(--blue-light); }
   .top-nav a.active { color: var(--blue); background: var(--blue-light); }
   .top-nav a svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-
-
-  /* ── LAYOUT ── */
   .layout {
-    display: flex;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 32px 24px 60px;
-    gap: 24px;
-    align-items: flex-start;
+    display: flex; max-width: 1280px; margin: 0 auto;
+    padding: 32px 24px 60px; gap: 24px; align-items: flex-start;
   }
 
-  /* ── SIDEBAR (Категория) ── */
+  /* SIDEBAR */
   .sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
+    width: 240px; flex-shrink: 0;
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
   }
-
   .sidebar-header {
-    padding: 16px 18px 12px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-bottom: 1px solid var(--border);
+    padding: 16px 18px 12px; font-size: 12px; font-weight: 700;
+    color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.08em; border-bottom: 1px solid var(--border);
   }
-
   .sidebar-list { padding: 8px 0; }
-
   .sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 18px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.16s;
-    border-left: 3px solid transparent;
-    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 18px; font-size: 13.5px; font-weight: 500;
+    color: var(--text); cursor: pointer; transition: all 0.16s;
+    border-left: 3px solid transparent; text-decoration: none;
   }
   .sidebar-item:hover { background: var(--blue-light); color: var(--blue); border-left-color: var(--blue-mid); }
   .sidebar-item.active { background: var(--blue-light); color: var(--blue); border-left-color: var(--blue); font-weight: 600; }
   .sidebar-item .s-icon { font-size: 18px; flex-shrink: 0; width: 22px; text-align: center; }
   .sidebar-item .s-count {
-    margin-left: auto;
-    font-size: 11px;
-    font-weight: 600;
-    background: var(--blue-light);
-    color: var(--blue);
-    border-radius: 20px;
-    padding: 2px 8px;
-    flex-shrink: 0;
+    margin-left: auto; font-size: 11px; font-weight: 600;
+    background: var(--blue-light); color: var(--blue);
+    border-radius: 20px; padding: 2px 8px; flex-shrink: 0;
   }
   .sidebar-item.active .s-count { background: var(--blue); color: white; }
 
-  /* ── MAIN CONTENT ── */
+  /* CONTENT */
   .content { flex: 1; min-width: 0; }
-
   .page-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
   .page-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 22px; }
 
   .search-wrap { margin-bottom: 22px; display: flex; gap: 12px; align-items: center; }
-
   .search-input {
-    flex: 1;
-    max-width: 400px;
-    height: 42px;
-    border: 1.5px solid var(--border);
-    border-radius: 9px;
-    padding: 0 16px 0 42px;
-    font-size: 14px;
-    font-family: inherit;
+    flex: 1; max-width: 400px; height: 42px;
+    border: 1.5px solid var(--border); border-radius: 9px;
+    padding: 0 16px 0 42px; font-size: 14px; font-family: inherit;
     color: var(--text);
     background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='none' stroke='%236b7a8d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 13px center;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
   }
   .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,111,219,0.12); }
   .search-input::placeholder { color: #aab3c0; }
-
   .total-badge {
-    font-size: 13px; color: var(--text-muted);
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: 20px; padding: 4px 14px; font-weight: 500;
+    font-size: 13px; color: var(--text-muted); background: var(--white);
+    border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-weight: 500;
   }
 
-  /* ── GRID ── */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 14px;
-  }
-
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
   .card {
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    cursor: pointer;
-    transition: all 0.22s cubic-bezier(.4,0,.2,1);
-    text-decoration: none;
-    color: inherit;
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: var(--radius); padding: 18px 16px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: all 0.22s cubic-bezier(.4,0,.2,1);
+    text-decoration: none; color: inherit; box-shadow: var(--shadow);
+    position: relative; overflow: hidden;
     animation: fadeUp 0.38s ease both;
   }
   .card::before {
@@ -200,15 +127,12 @@
   }
   .card:hover { border-color: var(--blue-mid); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
   .card:hover::before { opacity: 1; }
-
   .card-icon {
-    width: 52px; height: 52px; flex-shrink: 0;
-    border-radius: 12px; background: var(--blue-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px; position: relative; z-index: 1; transition: transform 0.22s;
+    width: 52px; height: 52px; flex-shrink: 0; border-radius: 12px;
+    background: var(--blue-light); display: flex; align-items: center;
+    justify-content: center; font-size: 26px; position: relative; z-index: 1; transition: transform 0.22s;
   }
   .card:hover .card-icon { transform: scale(1.08); }
-
   .card-text { position: relative; z-index: 1; flex: 1; min-width: 0; }
   .card-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.35; }
   .card-count { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
@@ -217,36 +141,57 @@
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .card:nth-child(1) { animation-delay:.03s } .card:nth-child(2) { animation-delay:.07s }
-  .card:nth-child(3) { animation-delay:.11s } .card:nth-child(4) { animation-delay:.15s }
-  .card:nth-child(5) { animation-delay:.19s } .card:nth-child(6) { animation-delay:.23s }
-  .card:nth-child(7) { animation-delay:.27s } .card:nth-child(8) { animation-delay:.31s }
-  .card:nth-child(9) { animation-delay:.35s }
+  .card:nth-child(1){animation-delay:.03s}.card:nth-child(2){animation-delay:.07s}
+  .card:nth-child(3){animation-delay:.11s}.card:nth-child(4){animation-delay:.15s}
+  .card:nth-child(5){animation-delay:.19s}.card:nth-child(6){animation-delay:.23s}
+  .card:nth-child(7){animation-delay:.27s}.card:nth-child(8){animation-delay:.31s}
+  .card:nth-child(9){animation-delay:.35s}
 
-  /* Map placeholder view */
-  .map-view {
-    display: none;
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    height: 500px;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 12px;
-    color: var(--text-muted);
-    font-size: 15px;
-  }
+  /* MAP VIEW */
+  .map-view { display: none; flex-direction: column; gap: 12px; }
   .map-view.visible { display: flex; }
-  .map-icon { font-size: 48px; }
+
+  .map-region-bar { display: flex; align-items: center; gap: 10px; min-height: 32px; }
+  .map-region-label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+  .map-region-chip {
+    font-size: 12px; font-weight: 600; background: var(--blue); color: white;
+    border-radius: 20px; padding: 4px 12px 4px 14px;
+    display: none; align-items: center; gap: 6px;
+  }
+  .map-region-chip.visible { display: flex; }
+  .map-region-chip button {
+    background: none; border: none; color: white; cursor: pointer;
+    font-size: 16px; line-height: 1; padding: 0;
+  }
+
+  #map-container {
+    width: 100%; height: 560px;
+    border-radius: var(--radius); border: 1.5px solid var(--border);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+
+  .leaflet-popup-content-wrapper {
+    border-radius: 10px !important;
+    box-shadow: 0 4px 20px rgba(26,111,219,0.2) !important;
+    font-family: 'Golos Text', sans-serif !important;
+    border: 1.5px solid var(--border) !important;
+  }
+  .leaflet-popup-content { margin: 10px 14px !important; }
+  .popup-region-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .popup-region-lots { font-size: 12px; color: var(--text-muted); }
+  .popup-btn {
+    margin-top: 8px; display: block; width: 100%;
+    background: var(--blue); color: white; border: none;
+    border-radius: 7px; padding: 7px 0; font-size: 12px;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: background 0.18s;
+  }
+  .popup-btn:hover { background: #155fc4; }
 </style>
 </head>
 <body>
 
 <header>
-
-
   <a href="#" class="logo">
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="32" height="32" rx="8" fill="#1a6fdb"/>
@@ -254,8 +199,6 @@
     </svg>
     E-Savdo
   </a>
-
-  <!-- Главное меню: Лоты и Карта -->
   <nav class="top-nav">
     <a href="#" class="active" id="nav-lots" onclick="switchView('lots', event)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -272,238 +215,292 @@
       Карта
     </a>
   </nav>
-
-
 </header>
 
 <div class="layout">
-
-  <!-- Sidebar: Категория -->
   <aside class="sidebar">
     <div class="sidebar-header">Категория</div>
     <div class="sidebar-list">
       <a href="#" class="sidebar-item active" data-cat="all">
-        <span class="s-icon">📋</span>
-        Все категории
-        <span class="s-count">0</span>
+        <span class="s-icon">📋</span>Все категории<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="gov">
-        <span class="s-icon">🏢</span>
-        Государственные активы
-        <span class="s-count">0</span>
+        <span class="s-icon">🏢</span>Государственные активы<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="rent">
-        <span class="s-icon">🔑</span>
-        Аренда госимущества
-        <span class="s-count">0</span>
+        <span class="s-icon">🔑</span>Аренда госимущества<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="bank">
-        <span class="s-icon">🏦</span>
-        Имущество коммерческих банков
-        <span class="s-count">0</span>
+        <span class="s-icon">🏦</span>Имущество коммерческих банков<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="realty">
-        <span class="s-icon">🏠</span>
-        Недвижимость
-        <span class="s-count">0</span>
+        <span class="s-icon">🏠</span>Недвижимость<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="auto">
-        <span class="s-icon">🚗</span>
-        Автотранспорт
-        <span class="s-count">0</span>
+        <span class="s-icon">🚗</span>Автотранспорт<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="land">
-        <span class="s-icon">🌳</span>
-        Земельные участки
-        <span class="s-count">0</span>
+        <span class="s-icon">🌳</span>Земельные участки<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="ads">
-        <span class="s-icon">🪧</span>
-        Объекты наружной рекламы
-        <span class="s-count">0</span>
+        <span class="s-icon">🪧</span>Объекты наружной рекламы<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="radar">
-        <span class="s-icon">📹</span>
-        Места для установки радаров и камер
-        <span class="s-count">0</span>
+        <span class="s-icon">📹</span>Места для установки радаров и камер<span class="s-count">0</span>
       </a>
       <a href="#" class="sidebar-item" data-cat="liquidation">
-        <span class="s-icon">📂</span>
-        Добровольная ликвидация субъектов предпринимательства
-        <span class="s-count">0</span>
+        <span class="s-icon">📂</span>Добровольная ликвидация субъектов предпринимательства<span class="s-count">0</span>
       </a>
     </div>
   </aside>
 
-  <!-- Main content -->
   <div class="content">
     <h1 class="page-title" id="page-title">Все категории</h1>
     <p class="page-subtitle">Выберите категорию для участия в торгах</p>
 
+    <!-- LOTS VIEW -->
     <div class="search-wrap" id="search-wrap">
       <input class="search-input" type="text" placeholder="Поиск по категориям..." id="searchInput">
       <span class="total-badge" id="totalBadge">9 категорий</span>
     </div>
 
     <div class="grid" id="grid">
-
       <a href="#" class="card" data-cat="gov">
         <div class="card-icon">🏢</div>
-        <div class="card-text">
-          <div class="card-title">Государственные активы</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Государственные активы</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="rent">
         <div class="card-icon">🔑</div>
-        <div class="card-text">
-          <div class="card-title">Аренда госимущества</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Аренда госимущества</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="bank">
         <div class="card-icon">🏦</div>
-        <div class="card-text">
-          <div class="card-title">Имущество коммерческих банков</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Имущество коммерческих банков</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="realty">
         <div class="card-icon">🏠</div>
-        <div class="card-text">
-          <div class="card-title">Недвижимость</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Недвижимость</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="auto">
         <div class="card-icon">🚗</div>
-        <div class="card-text">
-          <div class="card-title">Автотранспорт</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Автотранспорт</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="land">
         <div class="card-icon">🌳</div>
-        <div class="card-text">
-          <div class="card-title">Земельные участки</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Земельные участки</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="ads">
         <div class="card-icon">🪧</div>
-        <div class="card-text">
-          <div class="card-title">Объекты наружной рекламы</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Объекты наружной рекламы</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="radar">
         <div class="card-icon">📹</div>
-        <div class="card-text">
-          <div class="card-title">Места для установки радаров и камер</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Места для установки радаров и камер</div><div class="card-count">0 лотов</div></div>
       </a>
-
       <a href="#" class="card" data-cat="liquidation">
         <div class="card-icon">📂</div>
-        <div class="card-text">
-          <div class="card-title">Добровольная ликвидация субъектов предпринимательства</div>
-          <div class="card-count">0 лотов</div>
-        </div>
+        <div class="card-text"><div class="card-title">Добровольная ликвидация субъектов предпринимательства</div><div class="card-count">0 лотов</div></div>
       </a>
-
     </div>
 
-    <!-- Map placeholder -->
+    <!-- MAP VIEW -->
     <div class="map-view" id="map-view">
-      <div class="map-icon">🗺️</div>
-      <div style="font-weight:600;font-size:17px;color:var(--text)">Карта лотов</div>
-      <div>Здесь будет отображена интерактивная карта объектов</div>
+      <div class="map-region-bar">
+        <span class="map-region-label">Выберите регион на карте:</span>
+        <div class="map-region-chip" id="region-chip">
+          <span id="region-chip-name"></span>
+          <button onclick="resetRegion()" title="Сбросить">×</button>
+        </div>
+      </div>
+      <div id="map-container"></div>
     </div>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-  // ── View toggle: Лоты / Карта ──
-  function switchView(view, e) {
+// ── View toggle ──
+let mapInitialized = false;
+
+function switchView(view, e) {
+  e.preventDefault();
+  const grid = document.getElementById('grid');
+  const mapView = document.getElementById('map-view');
+  const searchWrap = document.getElementById('search-wrap');
+  const navLots = document.getElementById('nav-lots');
+  const navMap = document.getElementById('nav-map');
+
+  if (view === 'map') {
+    grid.style.display = 'none';
+    searchWrap.style.display = 'none';
+    mapView.classList.add('visible');
+    navMap.classList.add('active');
+    navLots.classList.remove('active');
+    if (!mapInitialized) { initMap(); mapInitialized = true; }
+  } else {
+    grid.style.display = '';
+    searchWrap.style.display = '';
+    mapView.classList.remove('visible');
+    navLots.classList.add('active');
+    navMap.classList.remove('active');
+  }
+}
+
+// ── Sidebar filter ──
+const sidebarItems = document.querySelectorAll('.sidebar-item');
+const cards = Array.from(document.querySelectorAll('.card'));
+const pageTitle = document.getElementById('page-title');
+const catNames = {
+  all: 'Все категории', gov: 'Государственные активы', rent: 'Аренда госимущества',
+  bank: 'Имущество коммерческих банков', realty: 'Недвижимость', auto: 'Автотранспорт',
+  land: 'Земельные участки', ads: 'Объекты наружной рекламы',
+  radar: 'Места для установки радаров и камер',
+  liquidation: 'Добровольная ликвидация субъектов предпринимательства'
+};
+sidebarItems.forEach(item => {
+  item.addEventListener('click', e => {
     e.preventDefault();
-    const grid = document.getElementById('grid');
-    const mapView = document.getElementById('map-view');
-    const searchWrap = document.getElementById('search-wrap');
-    const navLots = document.getElementById('nav-lots');
-    const navMap = document.getElementById('nav-map');
+    sidebarItems.forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const cat = item.dataset.cat;
+    pageTitle.textContent = catNames[cat] || 'Все категории';
+    filterCards(cat, document.getElementById('searchInput').value);
+  });
+});
+document.getElementById('searchInput').addEventListener('input', e => {
+  const activeCat = document.querySelector('.sidebar-item.active')?.dataset.cat || 'all';
+  filterCards(activeCat, e.target.value);
+});
+function filterCards(cat, query) {
+  const q = query.trim().toLowerCase();
+  let visible = 0;
+  cards.forEach(card => {
+    const matchCat = cat === 'all' || card.dataset.cat === cat;
+    const matchQ = !q || card.querySelector('.card-title').textContent.toLowerCase().includes(q);
+    const show = matchCat && matchQ;
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  const word = visible === 1 ? 'категория' : visible < 5 ? 'категории' : 'категорий';
+  document.getElementById('totalBadge').textContent = `${visible} ${word}`;
+}
 
-    if (view === 'map') {
-      grid.style.display = 'none';
-      searchWrap.style.display = 'none';
-      mapView.classList.add('visible');
-      navMap.classList.add('active');
-      navLots.classList.remove('active');
-    } else {
-      grid.style.display = '';
-      searchWrap.style.display = '';
-      mapView.classList.remove('visible');
-      navLots.classList.add('active');
-      navMap.classList.remove('active');
-    }
-  }
+// ── MAP ──
+let map, geojsonLayer, selectedRegion = null;
 
-  // ── Sidebar filter ──
-  const sidebarItems = document.querySelectorAll('.sidebar-item');
-  const cards = Array.from(document.querySelectorAll('.card'));
-  const pageTitle = document.getElementById('page-title');
+const regionNames = {
+  "Andijan": "Андижанская область",
+  "Bukhara": "Бухарская область",
+  "Fergana": "Ферганская область",
+  "Jizzakh": "Джизакская область",
+  "Karakalpakstan": "Республика Каракалпакстан",
+  "Kashkadarya": "Кашкадарьинская область",
+  "Khorezm": "Хорезмская область",
+  "Namangan": "Наманганская область",
+  "Navoiy": "Навоийская область",
+  "Samarkand": "Самаркандская область",
+  "Sirdaryo": "Сырдарьинская область",
+  "Surkhandarya": "Сурхандарьинская область",
+  "Tashkent": "Ташкентская область",
+  "Toshkent": "г. Ташкент"
+};
 
-  const catNames = {
-    all: 'Все категории',
-    gov: 'Государственные активы',
-    rent: 'Аренда госимущества',
-    bank: 'Имущество коммерческих банков',
-    realty: 'Недвижимость',
-    auto: 'Автотранспорт',
-    land: 'Земельные участки',
-    ads: 'Объекты наружной рекламы',
-    radar: 'Места для установки радаров и камер',
-    liquidation: 'Добровольная ликвидация субъектов предпринимательства'
+function getStyle(feature, isSelected) {
+  return {
+    fillColor: isSelected ? '#1a6fdb' : '#c8dbf5',
+    weight: 1.5,
+    opacity: 1,
+    color: '#ffffff',
+    fillOpacity: isSelected ? 0.75 : 0.55
   };
+}
 
-  sidebarItems.forEach(item => {
-    item.addEventListener('click', e => {
-      e.preventDefault();
-      sidebarItems.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-      const cat = item.dataset.cat;
-      pageTitle.textContent = catNames[cat] || 'Все категории';
-      filterCards(cat, document.getElementById('searchInput').value);
-    });
-  });
-
-  // ── Search ──
-  document.getElementById('searchInput').addEventListener('input', e => {
-    const activeCat = document.querySelector('.sidebar-item.active')?.dataset.cat || 'all';
-    filterCards(activeCat, e.target.value);
-  });
-
-  function filterCards(cat, query) {
-    const q = query.trim().toLowerCase();
-    let visible = 0;
-    cards.forEach(card => {
-      const matchCat = cat === 'all' || card.dataset.cat === cat;
-      const matchQ = !q || card.querySelector('.card-title').textContent.toLowerCase().includes(q);
-      const show = matchCat && matchQ;
-      card.style.display = show ? '' : 'none';
-      if (show) visible++;
-    });
-    const word = visible === 1 ? 'категория' : visible < 5 ? 'категории' : 'категорий';
-    document.getElementById('totalBadge').textContent = `${visible} ${word}`;
+function resetRegion() {
+  selectedRegion = null;
+  document.getElementById('region-chip').classList.remove('visible');
+  if (geojsonLayer) {
+    geojsonLayer.eachLayer(l => l.setStyle(getStyle(l.feature, false)));
   }
-</script>
+  map.flyTo([41.3, 63.9], 6, { duration: 0.8 });
+}
 
+function initMap() {
+  map = L.map('map-container', {
+    center: [41.3, 63.9],
+    zoom: 6,
+    minZoom: 5,
+    maxZoom: 10,
+    zoomControl: true
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Fetch Uzbekistan regions GeoJSON from public source
+  fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces.geojson')
+    .then(r => r.json())
+    .then(data => {
+      // Filter only Uzbekistan regions
+      const uzData = {
+        type: 'FeatureCollection',
+        features: data.features.filter(f => f.properties.admin === 'Uzbekistan' || f.properties.iso_a2 === 'UZ')
+      };
+
+      geojsonLayer = L.geoJSON(uzData, {
+        style: f => getStyle(f, false),
+        onEachFeature: (feature, layer) => {
+          const rawName = feature.properties.name || feature.properties.NAME_1 || '';
+          const name = regionNames[rawName] || rawName;
+
+          layer.on({
+            mouseover(e) {
+              if (selectedRegion !== layer) {
+                e.target.setStyle({ fillColor: '#4a90e2', fillOpacity: 0.65 });
+              }
+              e.target.bringToFront();
+            },
+            mouseout(e) {
+              if (selectedRegion !== layer) {
+                e.target.setStyle(getStyle(feature, false));
+              }
+            },
+            click(e) {
+              // Reset previous
+              if (selectedRegion) {
+                selectedRegion.setStyle(getStyle(selectedRegion.feature, false));
+              }
+              selectedRegion = layer;
+              layer.setStyle(getStyle(feature, true));
+
+              // Show chip
+              document.getElementById('region-chip-name').textContent = name;
+              document.getElementById('region-chip').classList.add('visible');
+
+              // Fly to region
+              map.flyToBounds(layer.getBounds(), { padding: [40, 40], duration: 0.8 });
+
+              // Popup
+              L.popup({ closeButton: false, className: 'region-popup' })
+                .setLatLng(e.latlng)
+                .setContent(`
+                  <div class="popup-region-name">${name}</div>
+                  <div class="popup-region-lots">0 лотов в этом регионе</div>
+                  <button class="popup-btn" onclick="alert('Фильтр по региону: ${name}')">Показать лоты</button>
+                `)
+                .openOn(map);
+            }
+          });
+        }
+      }).addTo(map);
+    })
+    .catch(() => {
+      document.getElementById('map-container').innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:15px;color:#6b7a8d">Не удалось загрузить карту</div>';
+    });
+}
+</script>
 </body>
 </html>
